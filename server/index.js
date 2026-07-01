@@ -88,6 +88,12 @@ io.on("connection", (socket) => {
 }
   });
 
+  socket.on("photo-captured", ({ roomId, photo }) => {
+  console.log("Photo received from", socket.id);
+
+  socket.to(roomId).emit("partner-photo", photo);
+});
+
   socket.on("disconnect", () => {
     console.log("Disconnected:", socket.id);
 
