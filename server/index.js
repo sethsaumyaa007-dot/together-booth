@@ -76,12 +76,16 @@ io.on("connection", (socket) => {
     const users = rooms[roomId].users;
 
     if (
-      users.length === 2 &&
-      rooms[roomId].ready[users[0]] &&
-      rooms[roomId].ready[users[1]]
-    ) {
-      io.to(roomId).emit("both-ready");
-    }
+  users.length === 2 &&
+  rooms[roomId].ready[users[0]] &&
+  rooms[roomId].ready[users[1]]
+) {
+  io.to(roomId).emit("both-ready");
+
+  setTimeout(() => {
+    io.to(roomId).emit("start-countdown");
+  }, 1000);
+}
   });
 
   socket.on("disconnect", () => {

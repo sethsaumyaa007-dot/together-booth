@@ -12,6 +12,7 @@ export default function Room() {
   const [partnerReady, setPartnerReady] = useState(false);
   const [bothReady, setBothReady] = useState(false);
 
+  const [countdown, setCountdown] = useState(null);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
@@ -95,6 +96,7 @@ export default function Room() {
       setReady(false);
       setPartnerReady(false);
       setBothReady(false);
+      setCountdown(null);
 
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = null;
@@ -111,8 +113,31 @@ export default function Room() {
     });
 
     socket.on("both-ready", () => {
-      setBothReady(true);
+        setBothReady(true);
+        setReady(true);
+        setPartnerReady(true);
     });
+
+    socket.on("start-countdown", () => {
+  let value = 3;
+
+  setCountdown(3);
+
+  const timer = setInterval(() => {
+    value--;
+
+    if (value > 0) {
+      setCountdown(value);
+    } else if (value === 0) {
+      setCountdown("📸");
+    } else {
+      clearInterval(timer);
+      setCountdown(null);
+    }
+  }, 1000);
+});
+
+
 
     socket.on("room-full", () => {
       alert("Room Full");
@@ -311,6 +336,36 @@ export default function Room() {
           </h2>
         )}
       </div>
+
+      {countdown !== null && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,.45)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+    }}
+  >
+    <div
+      style={{
+        width: "220px",
+        height: "220px",
+        borderRadius: "50%",
+        background: "white",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        fontSize: "90px",
+        fontWeight: "bold",
+      }}
+    >
+      {countdown}
+    </div>
+  </div>
+)}
     </div>
   );
 }
